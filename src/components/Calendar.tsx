@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api, CalendarEvent, User } from '../services/api';
-import { ChevronLeft, ChevronRight, Plus, Clock, Users, X, Calendar as CalendarIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Users, X, Calendar as CalendarIcon } from 'lucide-react';
 
 interface CalendarProps {
   users: User[];

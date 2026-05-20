@@ -6,7 +6,7 @@ import {
   Paperclip, Phone, Mail, MapPin, 
   FileText, Upload, Bell, MessageSquare, Send, ShieldCheck, Lock
 } from 'lucide-react';
-import { api, Project, Task, User, Contact, Notice, Message, CalendarEvent } from './services/api';
+import { api, Project, Task, User, Contact, Notice, Message } from './services/api';
 import { CalendarTab } from './components/Calendar';
 
 function App() {
