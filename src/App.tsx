@@ -87,6 +87,33 @@ function App() {
   const [secError, setSecError] = useState<string | null>(null);
   const [secSuccess, setSecSuccess] = useState<string | null>(null);
 
+  const handleCleanupUsers = async () => {
+    if (!confirm('Sei sicuro di voler eliminare tutti gli utenti tranne i 6 principali? Questa azione è irreversibile.')) return;
+    
+    const allowedEmails = [
+      'percorsiholdinggroup@gmail.com',
+      'percorsimanagement@gmail.com',
+      'marzio.papi@gmail.com',
+      'giorgio@studiogiacobini.it',
+      's.guagliardi@tonon-lovetro.com',
+      'm.peluso@tlvk.legal'
+    ];
+
+    try {
+      const usersToDelete = users.filter(u => !allowedEmails.includes(u.email));
+      for (const u of usersToDelete) {
+        await api.deleteUser(u.id);
+      }
+      
+      const remainingUsers = await api.getUsers();
+      setUsers(remainingUsers);
+      alert(`Pulizia completata. Eliminati ${usersToDelete.length} utenti.`);
+    } catch (err: any) {
+      console.error(err);
+      alert('Errore durante la pulizia degli utenti: ' + err.message);
+    }
+  };
+
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     setSecError(null);
@@ -808,16 +835,18 @@ function App() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider px-2">
                   <span>Membri del Team</span>
-                  <button 
-                    onClick={() => setIsNewUserOpen(!isNewUserOpen)}
-                    className="hover:text-white transition"
-                    title="Aggiungi Membro del Team"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
+                  {activeUser?.email === 'percorsimanagement@gmail.com' && (
+                    <button 
+                      onClick={() => setIsNewUserOpen(!isNewUserOpen)}
+                      className="hover:text-white transition"
+                      title="Aggiungi Membro del Team"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
 
-                {isNewUserOpen && (
+                {isNewUserOpen && activeUser?.email === 'percorsimanagement@gmail.com' && (
                   <form onSubmit={handleCreateUser} className="bg-slate-900 border border-slate-800 p-3 rounded-xl space-y-3 mt-2 animate-fadeIn">
                     <input 
                       type="text" 
@@ -1820,6 +1849,69 @@ function App() {
                     </div>
                   </form>
                 </div>
+                
+                {/* Admin Panel visibile solo a Giuseppe */}
+                {activeUser?.email === 'percorsimanagement@gmail.com' && (
+                  <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden backdrop-blur-sm">
+                    <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                      <Users className="text-brand-500" size={20} /> Amministrazione Utenti
+                    </h3>
+                    <p className="text-sm text-slate-400 mb-6">Gestisci gli utenti della piattaforma, reimposta password o elimina account.</p>
+                    
+                    <div className="space-y-3">
+                      {users.map(u => (
+                        <div key={u.id} className="flex items-center justify-between bg-slate-950/50 border border-slate-800 p-3 rounded-xl">
+                          <div className="truncate">
+                            <p className="text-sm font-bold text-white">{u.name}</p>
+                            <p className="text-xs text-slate-400 truncate">{u.email}</p>
+                          </div>
+                          <div className="flex gap-2 shrink-0">
+                            <button 
+                              onClick={() => {
+                                const newPass = prompt(`Inserisci la nuova password per ${u.name}:`);
+                                if (newPass && newPass.length >= 6) {
+                                  api.adminResetPassword(u.id, newPass)
+                                    .then(() => alert('Password aggiornata con successo!'))
+                                    .catch(e => alert(e.message));
+                                } else if (newPass) {
+                                  alert('La password deve essere di almeno 6 caratteri');
+                                }
+                              }}
+                              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg transition"
+                            >
+                              Reset Pass
+                            </button>
+                            <button 
+                              onClick={() => {
+                                if (confirm(`Sei sicuro di voler eliminare ${u.name}? Questa azione rimuoverà anche le chat e i dati collegati.`)) {
+                                  api.deleteUser(u.id)
+                                    .then(() => {
+                                      setUsers(users.filter(user => user.id !== u.id));
+                                      alert('Utente eliminato.');
+                                    })
+                                    .catch(e => alert(e.message));
+                                }
+                              }}
+                              className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs rounded-lg transition flex items-center gap-1"
+                            >
+                              <Trash2 size={14} /> Elimina
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="mt-8 pt-6 border-t border-slate-800">
+                      <button 
+                        onClick={handleCleanupUsers}
+                        className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-sm font-bold rounded-xl transition shadow-lg shadow-rose-500/20"
+                      >
+                        Esegui Pulizia Database Utenti
+                      </button>
+                      <p className="text-xs text-slate-500 mt-2">Questa azione manterrà solo i 6 utenti previsti ed eliminerà tutti gli altri.</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}

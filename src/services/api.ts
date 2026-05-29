@@ -181,6 +181,27 @@ export const api = {
     return res.json();
   },
 
+  async deleteUser(userId: number): Promise<void> {
+    const res = await fetchAuth(`${API_BASE_URL}/users/${userId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    if (!res.ok) throw new Error('Errore durante l\'eliminazione dell\'utente');
+  },
+
+  async adminResetPassword(userId: number, newPassword: string): Promise<void> {
+    // Supponendo esista un endpoint backend per l'admin per resettare la password
+    const res = await fetchAuth(`${API_BASE_URL}/users/${userId}/reset-password`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ new_password: newPassword })
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.detail || 'Errore durante il reset della password');
+    }
+  },
+
   // --- PROGETTI ---
   async getProjects(): Promise<Project[]> {
     const res = await fetchAuth(`${API_BASE_URL}/projects/`, {
@@ -371,6 +392,16 @@ export const api = {
       body: JSON.stringify(eventData)
     });
     if (!res.ok) throw new Error('Errore durante la creazione dell\'evento');
+    return res.json();
+  },
+
+  async updateEvent(eventId: number, updates: Partial<{ title: string, description: string, start_time: string, end_time: string, participant_ids: number[] }>): Promise<CalendarEvent> {
+    const res = await fetchAuth(`${API_BASE_URL}/events/${eventId}`, {
+      method: 'PATCH', // Assumiamo una patch per l'aggiornamento parziale
+      headers: getAuthHeaders(),
+      body: JSON.stringify(updates)
+    });
+    if (!res.ok) throw new Error('Errore durante l\'aggiornamento dell\'evento');
     return res.json();
   },
 
