@@ -305,7 +305,7 @@ export const api = {
 
   // --- CONTATTI (CLIENTI & FORNITORI) ---
   async getContacts(): Promise<Contact[]> {
-    const res = await fetchAuth(`${API_BASE_URL}/contacts`, {
+    const res = await fetchAuth(`${API_BASE_URL}/contacts/`, {
       headers: getAuthHeaders()
     });
     if (!res.ok) throw new Error('Errore durante il recupero dei contatti');
@@ -313,7 +313,7 @@ export const api = {
   },
 
   async createContact(contact: Partial<Contact>): Promise<Contact> {
-    const res = await fetchAuth(`${API_BASE_URL}/contacts`, {
+    const res = await fetchAuth(`${API_BASE_URL}/contacts/`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(contact)
@@ -332,7 +332,7 @@ export const api = {
 
   // --- AVVISI (BACHECA) ---
   async getNotices(): Promise<Notice[]> {
-    const res = await fetchAuth(`${API_BASE_URL}/notices`, {
+    const res = await fetchAuth(`${API_BASE_URL}/notices/`, {
       headers: getAuthHeaders()
     });
     if (!res.ok) throw new Error('Errore durante il recupero degli avvisi');
@@ -340,7 +340,7 @@ export const api = {
   },
 
   async createNotice(notice: Partial<Notice>): Promise<Notice> {
-    const res = await fetchAuth(`${API_BASE_URL}/notices`, {
+    const res = await fetchAuth(`${API_BASE_URL}/notices/`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(notice)
@@ -367,7 +367,7 @@ export const api = {
   },
 
   async sendMessage(senderId: number, receiverId: number, content: string): Promise<Message> {
-    const res = await fetchAuth(`${API_BASE_URL}/messages`, {
+    const res = await fetchAuth(`${API_BASE_URL}/messages/`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify({ sender_id: senderId, receiver_id: receiverId, content })
@@ -378,7 +378,7 @@ export const api = {
 
   // --- CALENDARIO (EVENTI) ---
   async getEvents(): Promise<CalendarEvent[]> {
-    const res = await fetchAuth(`${API_BASE_URL}/events`, {
+    const res = await fetchAuth(`${API_BASE_URL}/events/`, {
       headers: getAuthHeaders()
     });
     if (!res.ok) throw new Error('Errore durante il recupero degli eventi');
@@ -386,7 +386,7 @@ export const api = {
   },
 
   async createEvent(eventData: { title: string, description: string, start_time: string, end_time: string, participant_ids: number[] }): Promise<CalendarEvent> {
-    const res = await fetchAuth(`${API_BASE_URL}/events`, {
+    const res = await fetchAuth(`${API_BASE_URL}/events/`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(eventData)
