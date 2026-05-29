@@ -4,7 +4,7 @@ import {
   Clock, Trash2, X, Kanban, List, CheckCircle2, 
   AlertCircle, Sparkles, FolderPlus, Building2, 
   Paperclip, Phone, Mail, MapPin, 
-  FileText, Upload, Bell, MessageSquare, Send, ShieldCheck, Lock
+  FileText, Upload, Bell, MessageSquare, Send, ShieldCheck, Lock, Users
 } from 'lucide-react';
 import { api, Project, Task, User, Contact, Notice, Message } from './services/api';
 import { CalendarTab } from './components/Calendar';
